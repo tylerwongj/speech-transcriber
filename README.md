@@ -4,7 +4,7 @@ Local speech-to-text for macOS that types transcribed text automatically.
 
 ## Features
 
-- **F4 Trigger**: Press F4 to start/stop recording
+- **Ctrl+Space Trigger**: Press Ctrl+Space to start/stop recording
 - **Local Processing**: Uses OpenAI Whisper for 100% local transcription
 - **Auto-Type**: Automatically types transcribed text at cursor position
 - **Privacy First**: No cloud APIs, all processing happens locally
@@ -46,9 +46,9 @@ python3 transcribe.py
 ## Usage
 
 1. Run the application: `python3 transcribe.py`
-2. Press **F4** to start recording (you'll see "🎤 Recording started...")
+2. Press **Ctrl+Space** to start recording (you'll see "🎤 Recording started...")
 3. Speak clearly into your microphone
-4. Press **F4** again to stop recording and start transcription
+4. Press **Ctrl+Space** again to stop recording and start transcription
 5. The transcribed text will be automatically typed at your cursor position
 6. Press **Ctrl+C** to quit the application
 
@@ -58,8 +58,8 @@ python3 transcribe.py
 - **Problem**: App records but audio is silent
 - **Solution**: Check microphone permissions for `/usr/bin/python3`
 
-### F4 Key Not Working
-- **Problem**: No "Recording started" message when pressing F4
+### Ctrl+Space Not Working
+- **Problem**: No "Recording started" message when pressing Ctrl+Space
 - **Solution**: Check accessibility permissions for `/usr/bin/python3`
 
 ### ffmpeg Not Found
