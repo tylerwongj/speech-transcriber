@@ -10,7 +10,20 @@ import time
 import logging
 import tempfile
 import os
+import ssl
+import certifi
 from enum import Enum
+
+# Fix SSL certificate verification
+os.environ['SSL_CERT_FILE'] = certifi.where()
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+
+import urllib.request
+ssl_context = ssl.create_default_context(cafile=certifi.where())
+https_handler = urllib.request.HTTPSHandler(context=ssl_context)
+opener = urllib.request.build_opener(https_handler)
+urllib.request.install_opener(opener)
+
 import sounddevice as sd
 import whisper
 import numpy as np

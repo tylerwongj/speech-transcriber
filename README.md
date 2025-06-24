@@ -10,72 +10,114 @@ Local speech-to-text for macOS that types transcribed text automatically.
 - **Privacy First**: No cloud APIs, all processing happens locally
 - **Simple**: Single Python file, minimal dependencies
 
-## Setup
+## Quick Setup
 
-### 1. Install System Dependencies
+### Automated Setup (Recommended)
+```bash
+chmod +x init.sh
+./init.sh
+```
+
+The `init.sh` script will:
+- Install system dependencies (Homebrew, ffmpeg)
+- Create a Python virtual environment
+- Install all Python dependencies
+- **Pre-download the Whisper model (~140MB)**
+- Create a permission checker script
+- Guide you through setting up macOS permissions
+
+### Manual Setup
+
+1. **Install System Dependencies**
 ```bash
 brew install ffmpeg
 ```
 
-### 2. Install Python Dependencies
+2. **Setup Python Environment**
 ```bash
-pip3 install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### 3. Grant macOS Permissions
-
-**Critical**: You must grant these permissions or the app won't work:
-
-1. **Microphone Access**:
-   - System Preferences → Security & Privacy → Privacy → Microphone
-   - Click the lock and enter password
-   - Add `/usr/bin/python3` to the list
-   - Check the box to enable
-
-2. **Accessibility Access**:
-   - System Preferences → Security & Privacy → Privacy → Accessibility
-   - Click the lock and enter password
-   - Add `/usr/bin/python3` to the list
-   - Check the box to enable
-
-### 4. Run the Application
+3. **Pre-download Whisper Model** (Optional but recommended)
 ```bash
+python3 -c "import whisper; whisper.load_model('base')"
+```
+This downloads ~140MB and prevents delays on first use.
+
+4. **Grant macOS Permissions** (Critical!)
+
+You MUST grant these permissions:
+
+**Microphone Access:**
+- System Preferences → Security & Privacy → Privacy → Microphone
+- Add both: `/usr/bin/python3` AND `[project-path]/venv/bin/python3`
+- Check ✅ both boxes
+
+**Accessibility Access:**
+- System Preferences → Security & Privacy → Privacy → Accessibility  
+- Add: `/usr/bin/python3`, `[project-path]/venv/bin/python3`, and your Terminal app
+- Check ✅ all boxes
+
+5. **Test Permissions**
+```bash
+source venv/bin/activate
+python3 check_permissions.py
+```
+
+6. **Run the Application**
+```bash
+source venv/bin/activate
 python3 transcribe.py
 ```
 
 ## Usage
 
-1. Run the application: `python3 transcribe.py`
-2. Press **Ctrl+Space** to start recording (you'll see "🎤 Recording started...")
-3. Speak clearly into your microphone
-4. Press **Ctrl+Space** again to stop recording and start transcription
-5. The transcribed text will be automatically typed at your cursor position
-6. Press **Ctrl+C** to quit the application
+1. **Activate environment**: `source venv/bin/activate`
+2. **Run the app**: `python3 transcribe.py`
+3. **Record**: Press **Ctrl+Space** to start recording (you'll see "🎤 Recording started...")
+4. **Speak clearly** into your microphone
+5. **Stop**: Press **Ctrl+Space** again to stop recording and start transcription
+6. **Auto-type**: The transcribed text will be automatically typed at your cursor position
+7. **Quit**: Press **Ctrl+C** to quit the application
+
+### Pro Tip: Create an Alias
+Add to your `~/.zshrc` or `~/.bash_profile`:
+```bash
+alias transcribe='cd /path/to/speech-transcriber3 && source venv/bin/activate && python3 transcribe.py'
+```
 
 ## Troubleshooting
 
-### Silent Audio (max_volume=0.0000)
-- **Problem**: App records but audio is silent
-- **Solution**: Check microphone permissions for `/usr/bin/python3`
-
-### Ctrl+Space Not Working
-- **Problem**: No "Recording started" message when pressing Ctrl+Space
-- **Solution**: Check accessibility permissions for `/usr/bin/python3`
-
-### ffmpeg Not Found
-- **Problem**: Error about ffmpeg not being found
-- **Solution**: Run `brew install ffmpeg`
-
-### Permission Test
-To test if microphone permissions are working:
-```python
-import sounddevice as sd
-import numpy as np
-recording = sd.rec(44100, samplerate=44100, channels=1)
-sd.wait()
-max_volume = np.max(np.abs(recording))
-print(f"Max volume: {max_volume}")  # Should be > 0.01 if working
+### Use the Permission Checker
+First, always run the permission checker:
+```bash
+source venv/bin/activate
+python3 check_permissions.py
 ```
+
+### Common Issues
+
+**Silent Audio (max_volume=0.0000)**
+- Check microphone permissions for both Python executables
+- Test with: `python3 check_permissions.py`
+
+**Ctrl+Space Not Working** 
+- Add Terminal app to Accessibility permissions
+- Add both Python executables to Accessibility permissions
+
+**SSL Certificate Error**
+- Fixed automatically in the updated code
+- Uses `certifi` for proper certificate handling
+
+**Module Not Found Errors**
+- Always activate the virtual environment first: `source venv/bin/activate`
+- Reinstall if needed: `pip install -r requirements.txt`
+
+**"Not Trusted" Error**
+- Add your Terminal app to Accessibility permissions
+- Restart Terminal after granting permissions
 
 ## Architecture
 
@@ -84,8 +126,9 @@ print(f"Max volume: {max_volume}")  # Should be > 0.01 if working
 - **Threading**: Non-blocking recording and processing
 - **Permissions**: Requires microphone + accessibility access
 
-## Notes
+## Important Notes
 
-- First run will download the Whisper model (~140MB)
-- Uses system Python to avoid virtual environment permission issues
-- Designed for macOS - permissions and paths are macOS-specific
+- **First-time setup**: The `init.sh` script pre-downloads the Whisper model (~140MB) to avoid delays
+- **Manual setup**: If you skip the automated setup, the first recording will trigger a ~140MB download
+- **Virtual environment**: Always activate with `source venv/bin/activate` before running
+- **macOS specific**: Permissions and paths are designed for macOS only

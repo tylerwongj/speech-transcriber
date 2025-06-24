@@ -3,3 +3,4 @@ sounddevice
 pynput
 scipy
 numpy
+certifi
