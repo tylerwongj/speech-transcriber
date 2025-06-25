@@ -33,8 +33,10 @@ import sounddevice as sd
 import whisper
 import numpy as np
 from scipy.io.wavfile import write
+from scipy import signal
 from pynput import keyboard
 from pynput.keyboard import Key, Listener as KeyboardListener
+import noisereduce as nr
 
 # Ensure ffmpeg is available
 if '/opt/homebrew/bin' not in os.environ.get('PATH', ''):
@@ -241,8 +243,31 @@ class SpeechTranscriber:
         try:
             session_logger.info("Starting transcription")
             
-            # Convert to audio file
+            # Convert to audio array
             audio_array = np.array(audio_data, dtype=np.float32)
+            
+            # Audio preprocessing
+            session_logger.debug("Applying audio preprocessing")
+            
+            # 1. Normalize audio to prevent clipping
+            max_val = np.max(np.abs(audio_array))
+            if max_val > 0:
+                audio_array = audio_array / max_val * 0.95
+            
+            # 2. Apply noise reduction
+            try:
+                audio_array = nr.reduce_noise(y=audio_array, sr=16000)
+                session_logger.debug("Noise reduction applied")
+            except Exception as e:
+                session_logger.warning(f"Noise reduction failed: {e}")
+            
+            # 3. Apply high-pass filter to remove low-frequency noise
+            nyquist_freq = 16000 / 2
+            low_cutoff = 80  # Hz
+            normalized_cutoff = low_cutoff / nyquist_freq
+            b, a = signal.butter(3, normalized_cutoff, btype='high')
+            audio_array = signal.filtfilt(b, a, audio_array)
+            session_logger.debug("High-pass filter applied")
             
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as temp_file:
                 audio_int16 = (audio_array * 32767).astype(np.int16)
