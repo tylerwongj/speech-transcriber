@@ -108,16 +108,17 @@ class RecordingSession:
         self.is_recording = True
         self.stream = None
         self.logger = SessionLoggerAdapter(logger.logger, {'session_id': session_id})
-        self.min_duration = 0.5  # Minimum recording duration in seconds
+        self.min_duration = 0.5  # Default, will be updated by transcriber
         self.status_update_thread = None
 
 class SpeechTranscriber:
-    def __init__(self, model_size='small'):
+    def __init__(self, model_size='small', min_duration=0.5):
         self.recording_sessions = {}  # {session_id: RecordingSession}
         self.session_counter = 0
         self.processing_queue = queue.Queue()
         self._whisper_model = None
         self.model_size = model_size
+        self.min_duration = min_duration
         self.keyboard_controller = keyboard.Controller()
         self.sessions_lock = threading.Lock()
         
@@ -149,6 +150,7 @@ class SpeechTranscriber:
         
         with self.sessions_lock:
             session = RecordingSession(session_id, key)
+            session.min_duration = self.min_duration  # Set the configured min duration
             self.recording_sessions[session_id] = session
             
         session.logger.info(f"Recording started (key: {key})")
@@ -342,16 +344,20 @@ def main():
                        choices=['tiny', 'base', 'small', 'medium', 'large'],
                        default='small',
                        help='Whisper model size (default: small). Larger models are more accurate but slower.')
+    parser.add_argument('--min-duration', 
+                       type=float,
+                       default=0.5,
+                       help='Minimum recording duration in seconds (default: 0.5)')
     args = parser.parse_args()
     
     print("🎤 Speech Transcriber")
-    print(f"Using Whisper model: {args.model}")
+    print(f"Model: {args.model} | Min duration: {args.min_duration}s")
     print("Hold Right Option key to record, release to transcribe")
     print("Press Ctrl+C to quit")
     print(f"Logs are saved to: logs/")
     print("-" * 50)
     
-    transcriber = SpeechTranscriber(model_size=args.model)
+    transcriber = SpeechTranscriber(model_size=args.model, min_duration=args.min_duration)
     active_sessions = {}  # Track which keys have active sessions
     
     # Show initial ready status
@@ -362,13 +368,11 @@ def main():
         if key == Key.alt_r and key not in active_sessions:
             session_id = transcriber.start_recording(key)
             active_sessions[key] = session_id
-            logger.info(f"⌥ Right Option key pressed (session: {session_id})")
 
     def on_key_release(key):
         if key in active_sessions:
             session_id = active_sessions.pop(key)
             transcriber.stop_recording(key)
-            logger.info(f"⌥ Right Option key released (session: {session_id})")
 
     listener = KeyboardListener(on_press=on_key_press, on_release=on_key_release)
     listener.start()
