@@ -18,6 +18,7 @@ from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 import uuid
 import argparse
+import sys
 
 # Fix SSL certificate verification
 os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -49,9 +50,9 @@ os.makedirs('logs', exist_ok=True)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Console handler
+# Console handler - only show warnings and errors to avoid interfering with status display
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(logging.WARNING)
 console_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(console_formatter)
 
@@ -78,6 +79,26 @@ class SessionLoggerAdapter(logging.LoggerAdapter):
 # Create global logger adapter
 logger = SessionLoggerAdapter(logger, {'session_id': 'GLOBAL'})
 
+class StatusDisplay:
+    def __init__(self):
+        self.current_status = "Ready..."
+        self.lock = threading.Lock()
+        
+    def update(self, status):
+        with self.lock:
+            # Clear the current line and update status
+            sys.stdout.write('\r' + ' ' * 80 + '\r')  # Clear line
+            sys.stdout.write(status)
+            sys.stdout.flush()
+            self.current_status = status
+    
+    def clear_line(self):
+        sys.stdout.write('\r' + ' ' * 80 + '\r')
+        sys.stdout.flush()
+
+# Global status display
+status_display = StatusDisplay()
+
 class RecordingSession:
     def __init__(self, session_id, key):
         self.session_id = session_id
@@ -88,6 +109,7 @@ class RecordingSession:
         self.stream = None
         self.logger = SessionLoggerAdapter(logger.logger, {'session_id': session_id})
         self.min_duration = 0.5  # Minimum recording duration in seconds
+        self.status_update_thread = None
 
 class SpeechTranscriber:
     def __init__(self, model_size='small'):
@@ -130,6 +152,16 @@ class SpeechTranscriber:
             self.recording_sessions[session_id] = session
             
         session.logger.info(f"Recording started (key: {key})")
+        
+        # Start status update thread
+        def update_recording_status():
+            while session.is_recording:
+                elapsed = time.time() - session.start_time
+                status_display.update(f"🔴 Recording... ({elapsed:.1f}s)")
+                time.sleep(0.1)
+        
+        session.status_update_thread = threading.Thread(target=update_recording_status, daemon=True)
+        session.status_update_thread.start()
         
         # Start recording in new thread
         threading.Thread(target=self._record_audio, args=(session,), daemon=True).start()
@@ -242,6 +274,7 @@ class SpeechTranscriber:
     def _transcribe_and_type(self, session_id, audio_data, session_logger):
         try:
             session_logger.info("Starting transcription")
+            status_display.update("⏳ Processing...")
             
             # Convert to audio array
             audio_array = np.array(audio_data, dtype=np.float32)
@@ -283,12 +316,22 @@ class SpeechTranscriber:
                 
                 if text:
                     session_logger.info(f"Transcribed: {text}")
+                    status_display.update(f"✅ Transcribed: {text}")
                     self.keyboard_controller.type(text)
+                    # After typing, go back to ready state
+                    time.sleep(1.5)  # Show the transcription briefly
+                    status_display.update("Ready...")
                 else:
                     session_logger.info("No text detected (empty recording)")
+                    status_display.update("❌ No speech detected")
+                    time.sleep(1.5)
+                    status_display.update("Ready...")
                     
         except Exception as e:
             session_logger.error(f"Transcription error: {e}", exc_info=True)
+            status_display.update(f"❌ Error: {str(e)[:50]}")
+            time.sleep(2)
+            status_display.update("Ready...")
         finally:
             session_logger.info("Processing complete")
 
@@ -306,9 +349,13 @@ def main():
     print("Hold Right Option key to record, release to transcribe")
     print("Press Ctrl+C to quit")
     print(f"Logs are saved to: logs/")
+    print("-" * 50)
     
     transcriber = SpeechTranscriber(model_size=args.model)
     active_sessions = {}  # Track which keys have active sessions
+    
+    # Show initial ready status
+    status_display.update("Ready...")
     
     def on_key_press(key):
         # Use Right Option/Alt key
