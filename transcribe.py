@@ -84,6 +84,7 @@ class RecordingSession:
         self.is_recording = True
         self.stream = None
         self.logger = SessionLoggerAdapter(logger.logger, {'session_id': session_id})
+        self.min_duration = 0.5  # Minimum recording duration in seconds
 
 class SpeechTranscriber:
     def __init__(self):
@@ -148,8 +149,18 @@ class SpeechTranscriber:
             if not session:
                 return
                 
-            session.is_recording = False
+            # Check if we've met minimum duration
             duration = time.time() - session.start_time
+            if duration < session.min_duration:
+                # Continue recording until minimum duration is met
+                remaining = session.min_duration - duration
+                session.logger.debug(f"Extending recording by {remaining:.2f}s to meet minimum duration")
+                
+                # Schedule delayed stop
+                threading.Timer(remaining, lambda: self._stop_session(session_id)).start()
+                return
+                
+            session.is_recording = False
             audio_length = len(session.audio_data)
             
             session.logger.info(f"Recording stopped (duration: {duration:.2f}s, samples: {audio_length})")
