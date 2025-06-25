@@ -120,7 +120,7 @@ class RecordingSession:
         self.status_update_thread = None
 
 class SpeechTranscriber:
-    def __init__(self, model_size='small', min_duration=0.5):
+    def __init__(self, model_size='base', min_duration=0.5):
         self.recording_sessions = {}  # {session_id: RecordingSession}
         self.session_counter = 0
         self.processing_queue = queue.Queue()
@@ -350,8 +350,8 @@ def main():
     parser = argparse.ArgumentParser(description='Speech Transcriber - Hold Right Option key to record, release to transcribe')
     parser.add_argument('--model', 
                        choices=['tiny', 'base', 'small', 'medium', 'large'],
-                       default='small',
-                       help='Whisper model size (default: small). Larger models are more accurate but slower.')
+                       default='base',
+                       help='Whisper model size (default: base). Larger models are more accurate but slower.')
     parser.add_argument('--min-duration', 
                        type=float,
                        default=0.5,
