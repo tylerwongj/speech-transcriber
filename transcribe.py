@@ -53,6 +53,8 @@ class SpeechTranscriber:
         self._whisper_model = None
         self.keyboard_controller = keyboard.Controller()
         self.push_to_talk_active = False
+        self.processing_threads = []
+        self.state_lock = threading.Lock()
 
     @property
     def whisper_model(self):
@@ -62,11 +64,8 @@ class SpeechTranscriber:
         return self._whisper_model
 
     def push_to_talk_start(self):
-        # Allow starting new recording even during processing
-        if self.state != State.RECORDING and not self.push_to_talk_active:
-            # Cancel any ongoing processing
-            if self.state == State.PROCESSING:
-                logger.info("⚡ Starting new recording (cancelling processing)")
+        # Allow starting new recording immediately
+        if not self.push_to_talk_active:
             self.push_to_talk_active = True
             self.start_recording()
     
@@ -76,28 +75,34 @@ class SpeechTranscriber:
             self.stop_recording()
 
     def start_recording(self):
-        # Allow starting recording from IDLE or PROCESSING states
-        if self.state == State.RECORDING:
-            return
-
-        self.state = State.RECORDING
-        self.audio_data = []
-        self.is_recording = True
+        # Always allow starting a new recording
+        with self.state_lock:
+            # Reset for new recording
+            self.state = State.RECORDING
+            self.audio_data = []
+            self.is_recording = True
         threading.Thread(target=self._record_audio, daemon=True).start()
         logger.info("🎤 Recording started...")
 
     def stop_recording(self):
-        if self.state != State.RECORDING:
-            return
+        with self.state_lock:
+            if self.state != State.RECORDING:
+                return
 
-        self.is_recording = False
-        if not self.audio_data:
-            self.state = State.IDLE
-            return
+            self.is_recording = False
+            if not self.audio_data:
+                self.state = State.IDLE
+                return
+
+            # Copy audio data for processing
+            audio_to_process = self.audio_data.copy()
+            self.state = State.IDLE  # Immediately go to IDLE to allow new recordings
 
         logger.info("🔄 Processing...")
-        self.state = State.PROCESSING
-        threading.Thread(target=self._transcribe_and_type, daemon=True).start()
+        # Start processing in a new thread with the copied audio data
+        process_thread = threading.Thread(target=self._transcribe_and_type, args=(audio_to_process,), daemon=True)
+        process_thread.start()
+        self.processing_threads.append(process_thread)
 
     def _record_audio(self):
         with sd.InputStream(samplerate=16000, channels=1, dtype=np.float32,
@@ -109,10 +114,10 @@ class SpeechTranscriber:
         if self.is_recording:
             self.audio_data.extend(indata.flatten())
 
-    def _transcribe_and_type(self):
+    def _transcribe_and_type(self, audio_data):
         try:
             # Convert to audio file
-            audio_array = np.array(self.audio_data, dtype=np.float32)
+            audio_array = np.array(audio_data, dtype=np.float32)
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as temp_file:
                 audio_int16 = (audio_array * 32767).astype(np.int16)
                 write(temp_file.name, 16000, audio_int16)
@@ -131,8 +136,7 @@ class SpeechTranscriber:
             logger.error(f"❌ Error: {e}")
 
         finally:
-            self.state = State.IDLE
-            logger.info("Ready for next recording...")
+            logger.info("Processing complete")
 
 def main():
     print("🎤 Speech Transcriber")
