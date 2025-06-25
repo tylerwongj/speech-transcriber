@@ -15,7 +15,6 @@ import certifi
 from enum import Enum
 import queue
 from datetime import datetime
-from logging.handlers import TimedRotatingFileHandler
 import uuid
 import argparse
 import sys
@@ -56,14 +55,12 @@ console_handler.setLevel(logging.WARNING)
 console_formatter = logging.Formatter('\n%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(console_formatter)
 
-# File handler with daily rotation
-log_filename = os.path.join('logs', f'transcriber_{datetime.now().strftime("%Y-%m-%d")}.log')
-file_handler = TimedRotatingFileHandler(
-    filename=log_filename,
-    when='midnight',
-    interval=1,
-    backupCount=7  # Keep 7 days of logs
-)
+# Global log filename for session
+session_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_filename = os.path.join('logs', f'transcriber_{session_timestamp}.log')
+
+# File handler with session-based naming
+file_handler = logging.FileHandler(log_filename)
 file_handler.setLevel(logging.DEBUG)
 file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(session_id)s] %(message)s')
 file_handler.setFormatter(file_formatter)
@@ -362,7 +359,7 @@ def main():
     print(f"Model: {args.model} | Min duration: {args.min_duration}s")
     print("Hold Right Option key to record, release to transcribe")
     print("Press Ctrl+C to quit")
-    print(f"Logs are saved to: logs/")
+    print(f"Session log: {log_filename}")
     print("-" * 50)
     
     transcriber = SpeechTranscriber(model_size=args.model, min_duration=args.min_duration)
