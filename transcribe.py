@@ -50,10 +50,10 @@ os.makedirs('logs', exist_ok=True)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Console handler - only show warnings and errors to avoid interfering with status display
-console_handler = logging.StreamHandler()
+# Console handler - redirect to stderr to avoid interfering with status display
+console_handler = logging.StreamHandler(sys.stderr)
 console_handler.setLevel(logging.WARNING)
-console_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_formatter = logging.Formatter('\n%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(console_formatter)
 
 # File handler with daily rotation
@@ -83,17 +83,25 @@ class StatusDisplay:
     def __init__(self):
         self.current_status = "Ready..."
         self.lock = threading.Lock()
+        self.last_length = 0
         
     def update(self, status):
         with self.lock:
-            # Clear the current line and update status
-            sys.stdout.write('\r' + ' ' * 80 + '\r')  # Clear line
+            # Truncate status if too long to prevent line wrapping
+            max_width = 70
+            if len(status) > max_width:
+                status = status[:max_width-3] + "..."
+            
+            # Clear previous status completely
+            sys.stdout.write('\r' + ' ' * self.last_length + '\r')
             sys.stdout.write(status)
             sys.stdout.flush()
+            
+            self.last_length = len(status)
             self.current_status = status
     
     def clear_line(self):
-        sys.stdout.write('\r' + ' ' * 80 + '\r')
+        sys.stdout.write('\r' + ' ' * self.last_length + '\r')
         sys.stdout.flush()
 
 # Global status display
