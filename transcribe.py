@@ -17,6 +17,7 @@ import queue
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 import uuid
+import argparse
 
 # Fix SSL certificate verification
 os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -87,11 +88,12 @@ class RecordingSession:
         self.min_duration = 0.5  # Minimum recording duration in seconds
 
 class SpeechTranscriber:
-    def __init__(self):
+    def __init__(self, model_size='small'):
         self.recording_sessions = {}  # {session_id: RecordingSession}
         self.session_counter = 0
         self.processing_queue = queue.Queue()
         self._whisper_model = None
+        self.model_size = model_size
         self.keyboard_controller = keyboard.Controller()
         self.sessions_lock = threading.Lock()
         
@@ -113,9 +115,9 @@ class SpeechTranscriber:
     @property
     def whisper_model(self):
         if self._whisper_model is None:
-            logger.info("Loading Whisper model...")
-            self._whisper_model = whisper.load_model("base")
-            logger.info("Whisper model loaded")
+            logger.info(f"Loading Whisper model: {self.model_size}")
+            self._whisper_model = whisper.load_model(self.model_size)
+            logger.info(f"Whisper model '{self.model_size}' loaded")
         return self._whisper_model
 
     def start_recording(self, key):
@@ -266,12 +268,21 @@ class SpeechTranscriber:
             session_logger.info("Processing complete")
 
 def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Speech Transcriber - Hold Right Option key to record, release to transcribe')
+    parser.add_argument('--model', 
+                       choices=['tiny', 'base', 'small', 'medium', 'large'],
+                       default='small',
+                       help='Whisper model size (default: small). Larger models are more accurate but slower.')
+    args = parser.parse_args()
+    
     print("🎤 Speech Transcriber")
+    print(f"Using Whisper model: {args.model}")
     print("Hold Right Option key to record, release to transcribe")
     print("Press Ctrl+C to quit")
     print(f"Logs are saved to: logs/")
     
-    transcriber = SpeechTranscriber()
+    transcriber = SpeechTranscriber(model_size=args.model)
     active_sessions = {}  # Track which keys have active sessions
     
     def on_key_press(key):
