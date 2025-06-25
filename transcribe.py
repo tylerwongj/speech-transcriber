@@ -2,7 +2,7 @@
 """
 Simple Speech Transcriber
 Usage: python3 transcribe.py
-Press Ctrl+Space to record, speak, press Ctrl+Space to transcribe
+Hold Right Option key to record, release to transcribe
 """
 
 import threading
@@ -13,6 +13,7 @@ import os
 import ssl
 import certifi
 from enum import Enum
+import queue
 
 # Fix SSL certificate verification
 os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -51,6 +52,7 @@ class SpeechTranscriber:
         self.is_recording = False
         self._whisper_model = None
         self.keyboard_controller = keyboard.Controller()
+        self.push_to_talk_active = False
 
     @property
     def whisper_model(self):
@@ -59,14 +61,23 @@ class SpeechTranscriber:
             self._whisper_model = whisper.load_model("base")
         return self._whisper_model
 
-    def toggle_recording(self):
-        if self.state == State.IDLE:
+    def push_to_talk_start(self):
+        # Allow starting new recording even during processing
+        if self.state != State.RECORDING and not self.push_to_talk_active:
+            # Cancel any ongoing processing
+            if self.state == State.PROCESSING:
+                logger.info("⚡ Starting new recording (cancelling processing)")
+            self.push_to_talk_active = True
             self.start_recording()
-        elif self.state == State.RECORDING:
+    
+    def push_to_talk_stop(self):
+        if self.state == State.RECORDING and self.push_to_talk_active:
+            self.push_to_talk_active = False
             self.stop_recording()
 
     def start_recording(self):
-        if self.state != State.IDLE:
+        # Allow starting recording from IDLE or PROCESSING states
+        if self.state == State.RECORDING:
             return
 
         self.state = State.RECORDING
@@ -125,24 +136,34 @@ class SpeechTranscriber:
 
 def main():
     print("🎤 Speech Transcriber")
-    print("Press Ctrl+Space to record, Ctrl+C to quit")
+    print("Hold Right Option key to record, release to transcribe")
+    print("Press Ctrl+C to quit")
 
     transcriber = SpeechTranscriber()
-
-    # Track modifier keys
-    ctrl_pressed = False
+    
+    # Track which key is being used for push-to-talk
+    active_ptt_key = None
 
     def on_key_press(key):
-        nonlocal ctrl_pressed
-        if key == Key.ctrl_l or key == Key.ctrl_r:
-            ctrl_pressed = True
-        elif key == Key.space and ctrl_pressed:
-            transcriber.toggle_recording()
+        nonlocal active_ptt_key
+        
+        # Only start recording if no key is currently active
+        if active_ptt_key is None:
+            # Use Right Option/Alt key
+            if key == Key.alt_r:
+                active_ptt_key = key
+                transcriber.push_to_talk_start()
+                logger.info("⌥ Right Option key detected")
 
     def on_key_release(key):
-        nonlocal ctrl_pressed
-        if key == Key.ctrl_l or key == Key.ctrl_r:
-            ctrl_pressed = False
+        nonlocal active_ptt_key
+        
+        # Only stop if this is the key that started recording
+        if active_ptt_key is not None:
+            if (hasattr(key, 'vk') and hasattr(active_ptt_key, 'vk') and key.vk == active_ptt_key.vk) or \
+               (key == active_ptt_key):
+                transcriber.push_to_talk_stop()
+                active_ptt_key = None
 
     listener = KeyboardListener(on_press=on_key_press, on_release=on_key_release)
     listener.start()
