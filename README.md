@@ -88,6 +88,50 @@ Add to your `~/.zshrc` or `~/.bash_profile`:
 alias transcribe='cd /path/to/speech-transcriber3 && source venv/bin/activate && python3 transcribe.py'
 ```
 
+## Auto-Start on Login (Recommended)
+
+For the best experience, set up the speech transcriber to automatically start when you log into your Mac.
+
+### Setup Auto-Start
+
+The project includes a `start-on-login.sh` script that launches the transcriber in the background:
+
+```bash
+#!/bin/bash
+cd /Users/tyler/p2/speech-transcriber
+source venv/bin/activate
+nohup python3 transcribe.py > /dev/null 2>&1 &
+```
+
+**To enable auto-start:**
+
+1. **Test the script first** (make sure it works):
+   ```bash
+   ./start-on-login.sh
+   ```
+
+2. **Add to Login Items**:
+   - Open **System Preferences** → **Users & Groups**
+   - Click your username
+   - Click **"Login Items"** tab
+   - Click the **"+"** button
+   - Navigate to and select: `/path/to/your/speech-transcriber/start-on-login.sh`
+   - Click **"Add"**
+
+3. **Done!** The transcriber will now automatically start every time you log in
+
+### Benefits of Auto-Start
+- ✅ Always available - no manual startup needed
+- ✅ Runs silently in background
+- ✅ Survives computer restarts
+- ✅ Uses same permissions as manual setup
+
+### Manual Start Alternative
+If you prefer to start manually when needed:
+```bash
+cd /path/to/speech-transcriber && source venv/bin/activate && nohup python3 transcribe.py &
+```
+
 ## Troubleshooting
 
 ### Use the Permission Checker
@@ -119,6 +163,17 @@ python3 check_permissions.py
 - Add your Terminal app to Accessibility permissions
 - Restart Terminal after granting permissions
 
+**Auto-Start Not Working**
+- Verify the script is executable: `chmod +x start-on-login.sh`
+- Test the script manually: `./start-on-login.sh`
+- Check Login Items in System Preferences → Users & Groups
+- Make sure the full path to the script is correct in Login Items
+
+**Multiple Instances Running**
+- Check running processes: `ps aux | grep transcribe.py`
+- Kill extra processes: `pkill -f transcribe.py`
+- The auto-start script uses `nohup` so it runs in background
+
 ## Architecture
 
 - **Whisper Model**: Uses "base" model for good balance of speed/accuracy
@@ -126,9 +181,49 @@ python3 check_permissions.py
 - **Threading**: Non-blocking recording and processing
 - **Permissions**: Requires microphone + accessibility access
 
+## File Structure
+
+```
+speech-transcriber/
+├── transcribe.py           # Main application
+├── start.sh               # Manual start script
+├── start-on-login.sh      # Auto-start script for Login Items
+├── init.sh                # Automated setup script
+├── check_permissions.py   # Permission verification tool
+├── requirements.txt       # Python dependencies
+├── venv/                  # Python virtual environment
+├── logs/                  # Application logs
+└── legacy/                # Legacy files (not needed for normal use)
+    └── launchd/          # Old LaunchAgent approach files
+        ├── com.tyler.speech-transcriber.plist
+        ├── update-plist.sh
+        ├── launchd.error
+        └── launchd.log
+```
+
+## Scripts Reference
+
+### `start-on-login.sh` (Recommended)
+Auto-starts transcriber in background when you log in. Add to Login Items for best experience.
+
+### `start.sh` 
+Simple manual start script:
+```bash
+#!/bin/bash
+cd /Users/tyler/p2/speech-transcriber
+source venv/bin/activate && python3 transcribe.py
+```
+
+### `init.sh`
+One-time setup script that installs dependencies and sets up the environment.
+
+### Legacy Files
+The `legacy/launchd/` folder contains files from a previous LaunchAgent setup approach. These files are kept for reference but are not needed for normal operation. The Login Items approach is much simpler and more reliable.
+
 ## Important Notes
 
 - **First-time setup**: The `init.sh` script pre-downloads the Whisper model (~140MB) to avoid delays
 - **Manual setup**: If you skip the automated setup, the first recording will trigger a ~140MB download
 - **Virtual environment**: Always activate with `source venv/bin/activate` before running
 - **macOS specific**: Permissions and paths are designed for macOS only
+- **Auto-start recommended**: Use `start-on-login.sh` + Login Items for the best experience

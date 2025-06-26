@@ -1,0 +1,160 @@
+Traceback (most recent call last):
+  File "/Users/tyler/p2/speech-transcriber/transcribe.py", line 14, in <module>
+    import certifi
+ModuleNotFoundError: No module named 'certifi'
+Traceback (most recent call last):
+  File "/Users/tyler/p2/speech-transcriber/transcribe.py", line 14, in <module>
+    import certifi
+ModuleNotFoundError: No module named 'certifi'
+Traceback (most recent call last):
+  File "/Users/tyler/p2/speech-transcriber/transcribe.py", line 14, in <module>
+    import certifi
+ModuleNotFoundError: No module named 'certifi'
+This process is not trusted! Input event monitoring will not be possible until it is added to accessibility clients.
+This process is not trusted! Input event monitoring will not be possible until it is added to accessibility clients.
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:277: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-23281-21yra1wl'}
+  warnings.warn(
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:277: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-700-u080vbcq'}
+  warnings.warn(
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:277: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-10207-ua4bvlna'}
+  warnings.warn(
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/noisereduce/spectralgate/nonstationary.py:70: RuntimeWarning: invalid value encountered in divide
+  sig_mult_above_thresh = (abs_sig_stft - sig_stft_smooth) / sig_stft_smooth
+/Users/tyler/p2/speech-transcriber/transcribe.py:313: RuntimeWarning: invalid value encountered in cast
+  audio_int16 = (audio_array * 32767).astype(np.int16)
+/Users/tyler/p2/speech-transcriber/venv/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
+  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:277: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-13225-87v06ijr'}
+  warnings.warn(
