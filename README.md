@@ -4,7 +4,7 @@ Local speech-to-text for macOS that types transcribed text automatically.
 
 ## Features
 
-- **Ctrl+Space Trigger**: Press Ctrl+Space to start/stop recording
+- **Right Option Trigger**: Press Right Option key to start/stop recording
 - **Local Processing**: Uses OpenAI Whisper for 100% local transcription
 - **Auto-Type**: Automatically types transcribed text at cursor position
 - **Privacy First**: No cloud APIs, all processing happens locally
@@ -76,9 +76,9 @@ python3 transcribe.py
 
 1. **Activate environment**: `source venv/bin/activate`
 2. **Run the app**: `python3 transcribe.py`
-3. **Record**: Press **Ctrl+Space** to start recording (you'll see "🎤 Recording started...")
+3. **Record**: Press **Right Option key** to start recording (you'll see "🎤 Recording started...")
 4. **Speak clearly** into your microphone
-5. **Stop**: Press **Ctrl+Space** again to stop recording and start transcription
+5. **Stop**: Press **Right Option key** again to stop recording and start transcription
 6. **Auto-type**: The transcribed text will be automatically typed at your cursor position
 7. **Quit**: Press **Ctrl+C** to quit the application
 
@@ -88,13 +88,13 @@ Add to your `~/.zshrc` or `~/.bash_profile`:
 alias transcribe='cd /path/to/speech-transcriber3 && source venv/bin/activate && python3 transcribe.py'
 ```
 
-## Auto-Start on Login (Recommended)
+## ⭐ Auto-Start on Login (HIGHLY RECOMMENDED)
 
 For the best experience, set up the speech transcriber to automatically start when you log into your Mac.
 
 ### Setup Auto-Start
 
-The project includes a `start-on-login.sh` script that launches the transcriber in the background:
+The project includes an `add-this-script-to-login-items.sh` script that launches the transcriber in the background:
 
 ```bash
 #!/bin/bash
@@ -103,28 +103,34 @@ source venv/bin/activate
 nohup python3 transcribe.py > /dev/null 2>&1 &
 ```
 
-**To enable auto-start:**
+**⭐ To enable auto-start (HIGHLY RECOMMENDED):**
 
 1. **Test the script first** (make sure it works):
    ```bash
-   ./start-on-login.sh
+   ./add-this-script-to-login-items.sh
    ```
 
-2. **Add to Login Items**:
+2. **🎯 ADD TO LOGIN ITEMS** (Most Important Step):
    - Open **System Preferences** → **Users & Groups**
    - Click your username
    - Click **"Login Items"** tab
    - Click the **"+"** button
-   - Navigate to and select: `/path/to/your/speech-transcriber/start-on-login.sh`
+   - Navigate to and select: `/path/to/your/speech-transcriber/add-this-script-to-login-items.sh`
    - Click **"Add"**
 
-3. **Done!** The transcriber will now automatically start every time you log in
+3. **✅ Done!** The transcriber will now automatically start every time you log in
 
 ### Benefits of Auto-Start
 - ✅ Always available - no manual startup needed
 - ✅ Runs silently in background
 - ✅ Survives computer restarts
 - ✅ Uses same permissions as manual setup
+
+### Stopping the Transcriber
+To stop a running background transcriber:
+```bash
+./stop-transcriber.sh
+```
 
 ### Manual Start Alternative
 If you prefer to start manually when needed:
@@ -147,7 +153,7 @@ python3 check_permissions.py
 - Check microphone permissions for both Python executables
 - Test with: `python3 check_permissions.py`
 
-**Ctrl+Space Not Working** 
+**Right Option Key Not Working** 
 - Add Terminal app to Accessibility permissions
 - Add both Python executables to Accessibility permissions
 
@@ -164,8 +170,8 @@ python3 check_permissions.py
 - Restart Terminal after granting permissions
 
 **Auto-Start Not Working**
-- Verify the script is executable: `chmod +x start-on-login.sh`
-- Test the script manually: `./start-on-login.sh`
+- Verify the script is executable: `chmod +x add-this-script-to-login-items.sh`
+- Test the script manually: `./add-this-script-to-login-items.sh`
 - Check Login Items in System Preferences → Users & Groups
 - Make sure the full path to the script is correct in Login Items
 
@@ -187,7 +193,8 @@ python3 check_permissions.py
 speech-transcriber/
 ├── transcribe.py           # Main application
 ├── start.sh               # Manual start script
-├── start-on-login.sh      # Auto-start script for Login Items
+├── add-this-script-to-login-items.sh  # Auto-start script for Login Items
+├── stop-transcriber.sh    # Stop running transcriber script
 ├── init.sh                # Automated setup script
 ├── check_permissions.py   # Permission verification tool
 ├── requirements.txt       # Python dependencies
@@ -203,8 +210,14 @@ speech-transcriber/
 
 ## Scripts Reference
 
-### `start-on-login.sh` (Recommended)
+### `add-this-script-to-login-items.sh` (Recommended)
 Auto-starts transcriber in background when you log in. Add to Login Items for best experience.
+
+### `stop-transcriber.sh`
+Stops any running transcriber processes:
+```bash
+./stop-transcriber.sh
+```
 
 ### `start.sh` 
 Simple manual start script:
@@ -226,4 +239,4 @@ The `legacy/launchd/` folder contains files from a previous LaunchAgent setup ap
 - **Manual setup**: If you skip the automated setup, the first recording will trigger a ~140MB download
 - **Virtual environment**: Always activate with `source venv/bin/activate` before running
 - **macOS specific**: Permissions and paths are designed for macOS only
-- **Auto-start recommended**: Use `start-on-login.sh` + Login Items for the best experience
+- **Auto-start recommended**: Use `add-this-script-to-login-items.sh` + Login Items for the best experience
