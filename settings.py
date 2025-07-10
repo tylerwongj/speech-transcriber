@@ -23,7 +23,7 @@ RECORDING_KEY = Key.alt_r
 # Recording mode:
 # True  = Push-to-talk (hold key to record, release to transcribe)
 # False = Toggle mode (press once to start, press again to stop)
-PUSH_TO_TALK = True
+PUSH_TO_TALK = False
 
 # Whisper model size - affects accuracy vs speed:
 # 'tiny'   - Fastest, least accurate, smallest download
@@ -31,6 +31,6 @@ PUSH_TO_TALK = True
 # 'small'  - More accurate than base, slower
 # 'medium' - Very accurate, noticeably slower
 # 'large'  - Most accurate, slowest
-MODEL_SIZE = 'base'
+MODEL_SIZE = 'small'
 
 # =============================================================================
