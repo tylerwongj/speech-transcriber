@@ -2,7 +2,7 @@
 """
 Simple Speech Transcriber
 Usage: python3 transcribe.py
-Hold Right Option key to record, release to transcribe
+Configurable key and recording mode - see USER SETTINGS section below
 """
 
 import threading
@@ -37,6 +37,9 @@ from scipy import signal
 from pynput import keyboard
 from pynput.keyboard import Key, Listener as KeyboardListener
 import noisereduce as nr
+
+# Import user settings
+from settings import RECORDING_KEY, PUSH_TO_TALK, MODEL_SIZE
 
 # Ensure ffmpeg is available
 if '/opt/homebrew/bin' not in os.environ.get('PATH', ''):
@@ -344,7 +347,7 @@ class SpeechTranscriber:
 
 def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Speech Transcriber - Hold Right Option key to record, release to transcribe')
+    parser = argparse.ArgumentParser(description='Speech Transcriber - Configurable key and recording mode')
     parser.add_argument('--model', 
                        choices=['tiny', 'base', 'small', 'medium', 'large'],
                        default='base',
@@ -356,28 +359,52 @@ def main():
     args = parser.parse_args()
     
     print("🎤 Speech Transcriber")
-    print(f"Model: {args.model} | Min duration: {args.min_duration}s")
-    print("Hold Right Option key to record, release to transcribe")
+    print(f"Model: {MODEL_SIZE} | Min duration: {args.min_duration}s")
+    
+    # Show current key and mode
+    key_name = str(RECORDING_KEY).replace('Key.', '').replace('_', ' ').title()
+    mode_text = "Hold to record, release to transcribe" if PUSH_TO_TALK else "Press once to start, press again to stop"
+    print(f"Key: {key_name} | Mode: {mode_text}")
+    
     print("Press Ctrl+C to quit")
     print(f"Session log: {log_filename}")
     print("-" * 50)
     
-    transcriber = SpeechTranscriber(model_size=args.model, min_duration=args.min_duration)
+    transcriber = SpeechTranscriber(model_size=MODEL_SIZE, min_duration=args.min_duration)
     active_sessions = {}  # Track which keys have active sessions
+    is_recording_active = False  # Track toggle state for non-push-to-talk mode
     
     # Show initial ready status
     status_display.update("Ready...")
     
     def on_key_press(key):
-        # Use Right Option/Alt key
-        if key == Key.alt_r and key not in active_sessions:
-            session_id = transcriber.start_recording(key)
-            active_sessions[key] = session_id
+        nonlocal is_recording_active
+        
+        if key == RECORDING_KEY:
+            if PUSH_TO_TALK:
+                # Traditional push-to-talk mode - start recording on key press
+                if key not in active_sessions:
+                    session_id = transcriber.start_recording(key)
+                    active_sessions[key] = session_id
+            else:
+                # Toggle mode - press once to start/stop
+                if not is_recording_active:
+                    # Start recording
+                    session_id = transcriber.start_recording(key)
+                    active_sessions[key] = session_id
+                    is_recording_active = True
+                else:
+                    # Stop recording
+                    if key in active_sessions:
+                        transcriber.stop_recording(key)
+                        active_sessions.pop(key)
+                        is_recording_active = False
 
     def on_key_release(key):
-        if key in active_sessions:
-            session_id = active_sessions.pop(key)
+        if PUSH_TO_TALK and key in active_sessions:
+            # Only stop on key release in push-to-talk mode
             transcriber.stop_recording(key)
+            active_sessions.pop(key)
 
     listener = KeyboardListener(on_press=on_key_press, on_release=on_key_release)
     listener.start()
