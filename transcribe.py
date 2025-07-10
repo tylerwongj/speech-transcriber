@@ -18,6 +18,10 @@ from datetime import datetime
 import uuid
 import argparse
 import sys
+import warnings
+
+# Suppress FP16 warning from Whisper
+warnings.filterwarnings("ignore", message="FP16 is not supported on CPU; using FP32 instead")
 
 # Fix SSL certificate verification
 os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -120,7 +124,7 @@ class RecordingSession:
         self.status_update_thread = None
 
 class SpeechTranscriber:
-    def __init__(self, model_size='base', min_duration=0.5):
+    def __init__(self, model_size=MODEL_SIZE, min_duration=0.5):
         self.recording_sessions = {}  # {session_id: RecordingSession}
         self.session_counter = 0
         self.processing_queue = queue.Queue()
@@ -355,14 +359,18 @@ class SpeechTranscriber:
                 
                 if text:
                     session_logger.info(f"Transcribed: {text}")
-                    status_display.update(f"✅ Transcribed: {text}")
+                    # Clear status line and print transcription to new line
+                    status_display.clear_line()
+                    print(f"✅ Transcribed: {text}")
                     self.keyboard_controller.type(text)
                     # After typing, go back to ready state
                     time.sleep(1.5)  # Show the transcription briefly
                     status_display.update("Ready...")
                 else:
                     session_logger.info("No text detected (empty recording)")
-                    status_display.update("❌ No speech detected")
+                    # Clear status line and print message to new line
+                    status_display.clear_line()
+                    print("❌ No speech detected")
                     time.sleep(1.5)
                     status_display.update("Ready...")
                     
@@ -379,8 +387,8 @@ def main():
     parser = argparse.ArgumentParser(description='Speech Transcriber - Configurable key and recording mode')
     parser.add_argument('--model', 
                        choices=['tiny', 'base', 'small', 'medium', 'large'],
-                       default='base',
-                       help='Whisper model size (default: base). Larger models are more accurate but slower.')
+                       default=MODEL_SIZE,
+                       help=f'Whisper model size (default: {MODEL_SIZE}). Larger models are more accurate but slower.')
     parser.add_argument('--min-duration', 
                        type=float,
                        default=0.5,
