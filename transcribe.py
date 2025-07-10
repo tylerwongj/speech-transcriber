@@ -178,16 +178,45 @@ class SpeechTranscriber:
         
         return session_id
 
-    def stop_recording(self, key):
-        sessions_to_stop = []
+    def finish_recording(self, key):
+        """Stop recording and transcribe the audio"""
+        sessions_to_finish = []
         
         with self.sessions_lock:
             for session_id, session in list(self.recording_sessions.items()):
                 if session.key == key and session.is_recording:
-                    sessions_to_stop.append(session_id)
+                    sessions_to_finish.append(session_id)
         
-        for session_id in sessions_to_stop:
+        for session_id in sessions_to_finish:
             self._stop_session(session_id)
+    
+    def cancel_recording(self, key):
+        """Cancel recording without transcribing"""
+        sessions_to_cancel = []
+        
+        with self.sessions_lock:
+            for session_id, session in list(self.recording_sessions.items()):
+                if session.key == key and session.is_recording:
+                    sessions_to_cancel.append(session_id)
+        
+        for session_id in sessions_to_cancel:
+            self._cancel_session(session_id)
+    
+    def _cancel_session(self, session_id):
+        """Cancel a session without transcribing"""
+        with self.sessions_lock:
+            session = self.recording_sessions.get(session_id)
+            if not session:
+                return
+                
+            session.is_recording = False
+            duration = time.time() - session.start_time
+            audio_length = len(session.audio_data)
+            
+            session.logger.info(f"Recording cancelled (duration: {duration:.2f}s, samples: {audio_length})")
+            
+            # Remove from active sessions without queuing for processing
+            del self.recording_sessions[session_id]
 
     def _stop_session(self, session_id):
         with self.sessions_lock:
@@ -380,6 +409,35 @@ def main():
     def on_key_press(key):
         nonlocal is_recording_active
         
+        # Check for ESC cancellation first (works in both toggle and push-to-talk modes)
+        if key == Key.esc:
+            # Cancel recording if any active session exists
+            if active_sessions:
+                # Cancel all active sessions
+                for recording_key in list(active_sessions.keys()):
+                    transcriber.cancel_recording(recording_key)
+                    active_sessions.pop(recording_key)
+                
+                # Reset toggle mode state if applicable
+                if not PUSH_TO_TALK:
+                    is_recording_active = False
+                    
+                status_display.update("❌ Recording cancelled")
+                time.sleep(1)
+                status_display.update("Ready...")
+                return
+        
+        # Check if recording is active for toggle mode logic
+        if is_recording_active:
+            # Recording key pressed while recording - finish and transcribe
+            if key == RECORDING_KEY:
+                if RECORDING_KEY in active_sessions:
+                    transcriber.finish_recording(RECORDING_KEY)
+                    active_sessions.pop(RECORDING_KEY)
+                    is_recording_active = False
+                return
+        
+        # Start recording when not currently recording
         if key == RECORDING_KEY:
             if PUSH_TO_TALK:
                 # Traditional push-to-talk mode - start recording on key press
@@ -387,23 +445,17 @@ def main():
                     session_id = transcriber.start_recording(key)
                     active_sessions[key] = session_id
             else:
-                # Toggle mode - press once to start/stop
+                # Toggle mode - only start recording (stop is handled above when is_recording_active)
                 if not is_recording_active:
                     # Start recording
                     session_id = transcriber.start_recording(key)
                     active_sessions[key] = session_id
                     is_recording_active = True
-                else:
-                    # Stop recording
-                    if key in active_sessions:
-                        transcriber.stop_recording(key)
-                        active_sessions.pop(key)
-                        is_recording_active = False
 
     def on_key_release(key):
         if PUSH_TO_TALK and key in active_sessions:
-            # Only stop on key release in push-to-talk mode
-            transcriber.stop_recording(key)
+            # Only finish on key release in push-to-talk mode (transcribes)
+            transcriber.finish_recording(key)
             active_sessions.pop(key)
 
     listener = KeyboardListener(on_press=on_key_press, on_release=on_key_release)
