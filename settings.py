@@ -31,6 +31,6 @@ PUSH_TO_TALK = False
 # 'small'  - More accurate than base, slower (recommended since base not accurate enough)
 # 'medium' - Very accurate, noticeably slower
 # 'large'  - Most accurate, slowest
-MODEL_SIZE = 'medium'
+MODEL_SIZE = 'small'
 
 # =============================================================================
